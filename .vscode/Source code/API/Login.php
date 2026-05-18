@@ -4,7 +4,7 @@
 	$inData = getRequestInfo();
 	
 	$id = 0;
-	$firstName = "";should fail
+	$firstName = "";should faill
 	$lastName = "";
 
 	$conn = new mysqli("localhost", "TheBeast", "WeLoveCOP4331", "COP4331"); 	
