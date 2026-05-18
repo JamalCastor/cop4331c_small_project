@@ -1,10 +1,10 @@
 
 <?php
 
-	$inData = getRequestInfo();;;
+	$inData = getRequestInfo();
 	
 	$id = 0;
-	$firstName = "";
+	$firstName = "";should fail
 	$lastName = "";
 
 	$conn = new mysqli("localhost", "TheBeast", "WeLoveCOP4331", "COP4331"); 	
