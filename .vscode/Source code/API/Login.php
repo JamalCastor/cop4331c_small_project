@@ -1,6 +1,6 @@
 
 <?php
-
+//should succeed
 	$inData = getRequestInfo();
 	
 	$id = 0;
