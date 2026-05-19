@@ -1,8 +1,8 @@
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Check JS Syntax
-        run: |
-          find . -name "*.js" -print0 | xargs -0 -n1 node --check
+- name: Check JS Syntax
+  run: |
+    files=$(find . -name "*.js")
+    if [ -n "$files" ]; then
+      echo "$files" | xargs -n1 node --check
+    else
+      echo "No JavaScript files found."
+    fi
