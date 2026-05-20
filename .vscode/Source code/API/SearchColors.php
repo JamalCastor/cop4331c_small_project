@@ -5,7 +5,7 @@
 	$searchResults = "";
 	$searchCount = 0;
 
-	$conn = new mysqli("localhost", "root", "", "COP4331");
+	$conn = new mysqli("localhost", "TheBeast", "COP4331//x26SP", "ContactManager");
 	if ($conn->connect_error) 
 	{
 		returnWithError( $conn->connect_error );
