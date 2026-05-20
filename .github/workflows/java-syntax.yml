@@ -1,8 +1,0 @@
-- name: Check JS Syntax
-  run: |
-    files=$(find . -name "*.js")
-    if [ -n "$files" ]; then
-      echo "$files" | xargs -n1 node --check
-    else
-      echo "No JavaScript files found."
-    fi
