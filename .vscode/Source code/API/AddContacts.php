@@ -1,7 +1,7 @@
 <?php
 	$inData = getRequestInfo();
 	
-	$color = $inData["color"];
+	$contact = $inData["contact"];
 	$userId = $inData["userId"];
 
 	$conn = new mysqli("localhost", "TheBeast", "COP4331//x26SP", "ContactManager");
@@ -11,12 +11,15 @@
 	} 
 	else
 	{
-		$stmt = $conn->prepare("INSERT into Colors (UserId,Name) VALUES(?,?)");
-		$stmt->bind_param("ss", $userId, $color);
+		$stmt = $conn->prepare("INSERT into Contacts (UserId,Name) VALUES(?,?)");
+		$stmt->bind_param("ss", $userId, $contact);
 		$stmt->execute();
+
+		$newId = $conn->insert_id;
+
 		$stmt->close();
 		$conn->close();
-		returnWithError("");
+		returnWithError("", $newId);
 	}
 
 	function getRequestInfo()
@@ -30,9 +33,9 @@
 		echo $obj;
 	}
 	
-	function returnWithError( $err )
+	function returnWithError( $err, $newId = -1 )
 	{
-		$retValue = '{"error":"' . $err . '"}';
+		$retValue = '{"newId":' . $newId . ',"error":"' . $err . '"}';
 		sendResultInfoAsJson( $retValue );
 	}
 	
