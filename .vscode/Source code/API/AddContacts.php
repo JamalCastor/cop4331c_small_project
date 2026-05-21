@@ -1,6 +1,12 @@
 <?php
 	$inData = getRequestInfo();
 
+	if ($inData == null)
+	{
+		echo "API is running";
+		return;
+	}
+
 	$firstName = $inData["firstName"];
 	$lastName = $inData["lastName"];
 	$phone = $inData["phone"];
