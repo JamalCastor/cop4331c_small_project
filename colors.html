@@ -10,21 +10,20 @@
     <div class="min-vh-100 d-flex justify-content-center align-items-center bg-light px-3">
          <div class="card shadow-sm p-4 w-100" style="max-width: 550px;">
             <div class="card-body">
-                <h1 class="text-center mb-5">Lamp Project</h1>
+                <button class="btn btn-primary py-2 mt-2 w-100 mb-4" id="loginButton" onclick="doLogin()">Log out</button>
+
                 <div class="mb-4">
-                    <label class="form-label">Username</label>
+                    <label class="form-label">Search for a color</label>
                     <input class="form-control" type="text" id="loginName" placeholder="Enter Username"/>
                 </div>
                 <div class="mb-4">
-                    <label class="form-label">Password</label>
+                    <label class="form-label">Color to add</label>
                     <input class="form-control mb-4" id="loginPassword" placeholder="Enter Password"/>
                 </div>
-                <button class="btn btn-primary py-2 mt-2 w-100" id="loginButton" onclick="doLogin()">Submit</button>
-                <span class="d-block text-center mt-3" id="loginResult"></span>
-            </div>
-         </div>
-    </div>
 
-    <script type="text/javascript" src="js/code.js"></script>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
