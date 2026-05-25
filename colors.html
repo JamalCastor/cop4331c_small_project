@@ -10,20 +10,25 @@
     <div class="min-vh-100 d-flex justify-content-center align-items-center bg-light px-3">
          <div class="card shadow-sm p-4 w-100" style="max-width: 550px;">
             <div class="card-body">
-                <button class="btn btn-primary py-2 mt-2 w-100 mb-4" id="loginButton" onclick="doLogin()">Log out</button>
-
+                <button class="btn btn-outline-secondary btn-sm mb-4">log out</button>
                 <div class="mb-4">
-                    <label class="form-label">Search for a color</label>
-                    <input class="form-control" type="text" id="loginName" placeholder="Enter Username"/>
+                    <label class="form-label">Search</label>
+                    <input class="form-control mb-4" type="text" id="searchText" placeholder="Search for a color"/>
+                    <button class="btn btn-primary" onclick="searchColor()">Search for Color</button>
+                    <p class="text-center text-muted mt-3 mb-0" id="colorSearchResult"></p>
                 </div>
                 <div class="mb-4">
-                    <label class="form-label">Color to add</label>
-                    <input class="form-control mb-4" id="loginPassword" placeholder="Enter Password"/>
+                    <label class="form-label">Color Add</label>
+                    <input class="form-control mb-4" id="colorText" placeholder="Enter Password"/>
+                    <button class="btn btn-primary" onclick="addColor()">Add Color</button>
+                    <p class="text-center text-muted mt-3 mb-0" id="colorAddResult"></p>
                 </div>
-
             </div>
         </div>
     </div>
+
+    <script type="text/javascript" src="js/code.js"></script>
 </body>
+
 
 </html>
