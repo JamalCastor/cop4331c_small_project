@@ -20,7 +20,7 @@
 
 		if( $row = $result->fetch_assoc() )
 		{
-			if( password_verify($inData["password"], $row["Password"]) )
+			if( md5($inData["password"]) == $row["Password"] )
 			{
 				returnWithInfo( $row['firstName'], $row['lastName'], $row['ID'] );
 			}
