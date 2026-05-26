@@ -1,4 +1,3 @@
-
 <?php
 	$inData = getRequestInfo();
 	
@@ -20,7 +19,7 @@
 
 		if( $row = $result->fetch_assoc() )
 		{
-			if( md5($inData["password"]) == $row["Password"] )
+			if( $inData["password"] == $row["Password"] )
 			{
 				returnWithInfo( $row['firstName'], $row['lastName'], $row['ID'] );
 			}
