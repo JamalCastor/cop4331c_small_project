@@ -14,13 +14,13 @@ function doLogin()
 	
 	let login = document.getElementById("loginName").value;
 	let password = document.getElementById("loginPassword").value;
-    console.log("hello");
-	var hash = md5( password );
+    
+	//var hash = md5( password );
 	
 	document.getElementById("loginResult").innerHTML = "";
 
-	//let tmp = {login:login,password:password};
-	var tmp = {login:login,password:hash};
+	let tmp = {login:login,password:password};
+	//var tmp = {login:login,password:hash};
 	let jsonPayload = JSON.stringify( tmp );
 	
 	let url = urlBase + '/Login.' + extension;
@@ -58,6 +58,63 @@ function doLogin()
 		document.getElementById("loginResult").innerHTML = err.message;
 	}
 
+}
+
+
+
+function doSignup()
+{
+    let firstName = document.getElementById("signupFirstName").value;
+    let lastName = document.getElementById("signupLastName").value;
+    let login = document.getElementById("signupLogin").value;
+    let password = document.getElementById("signupPassword").value;
+
+    document.getElementById("signupResult").innerHTML = "";
+
+    let tmp = {
+        firstName: firstName,
+        lastName: lastName,
+        login: login,
+        password: password
+    };
+
+    let jsonPayload = JSON.stringify(tmp);
+
+    let url = urlBase + '/Signup.' + extension;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+
+    try
+    {
+        xhr.onreadystatechange = function()
+        {
+            if (this.readyState == 4 && this.status == 200)
+            {
+                let jsonObject = JSON.parse(xhr.responseText);
+
+                if (jsonObject.error && jsonObject.error.length > 0)
+                {
+                    document.getElementById("signupResult").innerHTML = jsonObject.error;
+                    return;
+                }
+
+                document.getElementById("signupResult").innerHTML = "Account created successfully!";
+
+                setTimeout(function()
+                {
+                    window.location.href = "index.html";
+                }, 1000);
+            }
+        };
+
+        xhr.send(jsonPayload);
+    }
+    catch(err)
+    {
+        document.getElementById("signupResult").innerHTML = err.message;
+    }
 }
 
 function saveCookie()
