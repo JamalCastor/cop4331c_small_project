@@ -1,9 +1,12 @@
 <?php
 	$inData = getRequestInfo();
 	
-	$contact = $inData["contact"];
+	$contactId = $inData["contactId"];
 	$userId = $inData["userId"];
-	$newContact = $inData["newContact"];
+	$firstName = $inData["firstName"];
+	$lastName = $inData["lastName"];
+	$phone = $inData["phone"];
+	$email = $inData["email"];
 
 	$conn = new mysqli("localhost", "TheBeast", "COP4331//x26SP", "ContactManager");
 	if ($conn->connect_error) 
@@ -12,8 +15,8 @@
 	} 
 	else
 	{
-		$stmt = $conn->prepare("UPDATE Contacts SET Name=? WHERE UserId=? AND Name=?");
-		$stmt->bind_param("sss", $newContact, $userId, $contact);
+		$stmt = $conn->prepare("UPDATE Contacts SET FirstName=?, LastName=?, Phone=?, Email=? WHERE ID=? AND UserID=?");
+		$stmt->bind_param("ssssii", $firstName, $lastName, $phone, $email, $contactId, $userId);
 		$stmt->execute();
 		$stmt->close();
 		$conn->close();

@@ -14,7 +14,7 @@
 	else
 	{
 		$hashedPassword = md5($password);
-		$stmt = $conn->prepare("INSERT INTO Users (firstName,lastName,Login,Password) VALUES(?,?,?,?)");
+		$stmt = $conn->prepare("INSERT INTO Users (FirstName,LastName,Login,Password) VALUES(?,?,?,?)");
 		$stmt->bind_param("ssss", $firstName, $lastName, $login, $hashedPassword);
 		$stmt->execute();
 
