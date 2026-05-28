@@ -245,14 +245,20 @@ function searchContacts()
 		{
 			if (this.readyState == 4 && this.status == 200) 
 			{
-				document.getElementById("contactSearchResult").innerHTML = "Contact(s) has been retrieved";
 				let jsonObject = JSON.parse( xhr.responseText );
+
+				if( jsonObject.error && jsonObject.error.length > 0 )
+				{
+					document.getElementById("contactSearchResult").innerHTML = jsonObject.error;
+					document.getElementById("contactList").innerHTML = "";
+					return;
+				}
+
+				document.getElementById("contactSearchResult").innerHTML = "Contact(s) has been retrieved";
 				
 				for( let i=0; i<jsonObject.results.length; i++ )
 				{
-					contactList += jsonObject.results[i].firstName + " " + jsonObject.results[i].lastName;
-					contactList += " | " + jsonObject.results[i].phone;
-					contactList += " | " + jsonObject.results[i].email;
+					contactList += jsonObject.results[i];
 
 					if( i < jsonObject.results.length - 1 )
 					{
@@ -269,5 +275,4 @@ function searchContacts()
 	{
 		document.getElementById("contactSearchResult").innerHTML = err.message;
 	}
-	
 }
