@@ -276,3 +276,66 @@ function searchContacts()
 		document.getElementById("contactSearchResult").innerHTML = err.message;
 	}
 }
+
+function editContact()
+{
+	let contactId = document.getElementById("editContactId").value;
+	let firstName = document.getElementById("editFirstName").value;
+	let lastName = document.getElementById("editLastName").value;
+	let phone = document.getElementById("editPhone").value;
+	let email = document.getElementById("editEmail").value;
+
+	document.getElementById("contactEditResult").innerHTML = "";
+
+	let tmp = {
+		contactId: contactId,
+		userId: userId,
+		firstName: firstName,
+		lastName: lastName,
+		phone: phone,
+		email: email
+	};
+
+	let jsonPayload = JSON.stringify(tmp);
+
+	let url = urlBase + '/EditContacts.' + extension;
+
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+
+	try
+	{
+		xhr.onreadystatechange = function()
+		{
+			if (this.readyState == 4 && this.status == 200)
+			{
+				let jsonObject = JSON.parse(xhr.responseText);
+
+				if (jsonObject.error && jsonObject.error.length > 0)
+				{
+					document.getElementById("contactEditResult").innerHTML = jsonObject.error;
+					return;
+				}
+
+				document.getElementById("contactEditResult").innerHTML = "Contact has been updated";
+
+				document.getElementById("editContactId").value = "";
+				document.getElementById("editFirstName").value = "";
+				document.getElementById("editLastName").value = "";
+				document.getElementById("editPhone").value = "";
+				document.getElementById("editEmail").value = "";
+
+				searchContacts();
+			}
+		};
+
+		xhr.send(jsonPayload);
+	}
+	catch(err)
+	{
+		document.getElementById("contactEditResult").innerHTML = err.message;
+	}
+}
+
+//TODO search needs to give me id's so i can edit the contact with the db
