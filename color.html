@@ -3,32 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Contact Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+
+<body onload="readCookie();">
     <div class="min-vh-100 d-flex justify-content-center align-items-center bg-light px-3">
-         <div class="card shadow-sm p-4 w-100" style="max-width: 550px;">
+        <div class="card shadow-sm p-4 w-100" style="max-width: 650px;">
             <div class="card-body">
-                <button class="btn btn-outline-secondary btn-sm mb-4">log out</button>
-                <div class="mb-4">
-                    <label class="form-label">Search</label>
-                    <input class="form-control mb-4" type="text" id="searchText" placeholder="Search for a color"/>
-                    <button class="btn btn-primary" onclick="searchColor()">Search for Color</button>
-                    <p class="text-center text-muted mt-3 mb-0" id="colorSearchResult"></p>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <p class="mb-0 fw-semibold" id="userName"></p>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="doLogout();">Log Out</button>
                 </div>
+
                 <div class="mb-4">
-                    <label class="form-label">Color Add</label>
-                    <input class="form-control mb-4" id="colorText" placeholder="Enter Password"/>
-                    <button class="btn btn-primary" onclick="addColor()">Add Color</button>
-                    <p class="text-center text-muted mt-3 mb-0" id="colorAddResult"></p>
+                    <label class="form-label">Search Contacts</label>
+                    <input class="form-control mb-3" type="text" id="searchText" placeholder="Search by name, phone, or email">
+                    <button class="btn btn-primary" onclick="searchContacts();">Search Contacts</button>
+                    <p class="text-center text-muted mt-3 mb-0" id="contactSearchResult"></p>
                 </div>
+
+                <hr>
+
+                <div class="mb-4">
+                    <label class="form-label">Add Contact</label>
+
+                    <input class="form-control mb-3" type="text" id="contactFirstName" placeholder="First Name">
+                    <input class="form-control mb-3" type="text" id="contactLastName" placeholder="Last Name">
+                    <input class="form-control mb-3" type="text" id="contactPhone" placeholder="Phone">
+                    <input class="form-control mb-3" type="email" id="contactEmail" placeholder="Email">
+
+                    <button class="btn btn-success" onclick="addContact();">Add Contact</button>
+                    <p class="text-center text-muted mt-3 mb-0" id="contactAddResult"></p>
+                </div>
+
+                <hr>
+
+                <div class="mt-4">
+                    <h5>Contacts</h5>
+                    <div id="contactList"></div>
+                </div>
+
             </div>
         </div>
     </div>
 
     <script type="text/javascript" src="js/code.js"></script>
 </body>
-
-
 </html>
