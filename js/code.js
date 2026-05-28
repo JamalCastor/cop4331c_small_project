@@ -338,4 +338,57 @@ function editContact()
 	}
 }
 
+
+
+function deleteContact()
+{
+	let contactId = document.getElementById("deleteContactId").value;
+
+	document.getElementById("contactDeleteResult").innerHTML = "";
+
+	let tmp = {
+		contactId: contactId,
+		userId: userId
+	};
+
+	let jsonPayload = JSON.stringify(tmp);
+
+	let url = urlBase + '/DeleteContacts.' + extension;
+
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+
+	try
+	{
+		xhr.onreadystatechange = function()
+		{
+			if (this.readyState == 4 && this.status == 200)
+			{
+				let jsonObject = JSON.parse(xhr.responseText);
+
+				if (jsonObject.error && jsonObject.error.length > 0)
+				{
+					document.getElementById("contactDeleteResult").innerHTML = jsonObject.error;
+					return;
+				}
+
+				document.getElementById("contactDeleteResult").innerHTML = "Contact has been deleted";
+
+				document.getElementById("deleteContactId").value = "";
+
+				searchContacts();
+			}
+		};
+
+		xhr.send(jsonPayload);
+	}
+	catch(err)
+	{
+		document.getElementById("contactDeleteResult").innerHTML = err.message;
+	}
+}
+
+
+
 //TODO search needs to give me id's so i can edit the contact with the db

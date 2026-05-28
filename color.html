@@ -9,7 +9,7 @@
 
 <body onload="readCookie();">
     <div class="min-vh-100 d-flex justify-content-center align-items-center bg-light px-3 py-4">
-        <div class="card shadow-sm p-4 w-100" style="max-width: 650px;">
+        <div class="card shadow-sm p-4 w-100" style="max-width: 700px;">
             <div class="card-body">
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -17,15 +17,26 @@
                     <button class="btn btn-outline-secondary btn-sm" onclick="doLogout();">Log Out</button>
                 </div>
 
+                <!-- Search Contacts -->
                 <div class="mb-4">
                     <label class="form-label">Search Contacts</label>
-                    <input class="form-control mb-3" type="text" id="searchText" placeholder="Search by first name">
-                    <button class="btn btn-primary" onclick="searchContacts();">Search Contacts</button>
+                    <input 
+                        class="form-control mb-3" 
+                        type="text" 
+                        id="searchText" 
+                        placeholder="Search by first name"
+                    >
+
+                    <button class="btn btn-primary" onclick="searchContacts();">
+                        Search Contacts
+                    </button>
+
                     <p class="text-center text-muted mt-3 mb-0" id="contactSearchResult"></p>
                 </div>
 
                 <hr>
 
+                <!-- Add Contact -->
                 <div class="mb-4">
                     <label class="form-label">Add Contact</label>
 
@@ -34,12 +45,16 @@
                     <input class="form-control mb-3" type="text" id="contactPhone" placeholder="Phone">
                     <input class="form-control mb-3" type="email" id="contactEmail" placeholder="Email">
 
-                    <button class="btn btn-success" onclick="addContact();">Add Contact</button>
+                    <button class="btn btn-success" onclick="addContact();">
+                        Add Contact
+                    </button>
+
                     <p class="text-center text-muted mt-3 mb-0" id="contactAddResult"></p>
                 </div>
 
                 <hr>
 
+                <!-- Edit Contact -->
                 <div class="mb-4">
                     <label class="form-label">Edit Contact</label>
 
@@ -49,12 +64,31 @@
                     <input class="form-control mb-3" type="text" id="editPhone" placeholder="Phone">
                     <input class="form-control mb-3" type="email" id="editEmail" placeholder="Email">
 
-                    <button class="btn btn-warning" onclick="editContact();">Edit Contact</button>
+                    <button class="btn btn-warning" onclick="editContact();">
+                        Edit Contact
+                    </button>
+
                     <p class="text-center text-muted mt-3 mb-0" id="contactEditResult"></p>
                 </div>
 
                 <hr>
 
+                <!-- Delete Contact -->
+                <div class="mb-4">
+                    <label class="form-label">Delete Contact</label>
+
+                    <input class="form-control mb-3" type="text" id="deleteContactId" placeholder="Contact ID">
+
+                    <button class="btn btn-danger" onclick="deleteContact();">
+                        Delete Contact
+                    </button>
+
+                    <p class="text-center text-muted mt-3 mb-0" id="contactDeleteResult"></p>
+                </div>
+
+                <hr>
+
+                <!-- Contact Results -->
                 <div class="mt-4">
                     <h5>Contacts</h5>
                     <div id="contactList"></div>
