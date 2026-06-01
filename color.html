@@ -14,12 +14,15 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <p class="mb-0 fw-semibold" id="userName"></p>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="doLogout();">Log Out</button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="doLogout();">
+                        Log Out
+                    </button>
                 </div>
 
                 <!-- Search Contacts -->
                 <div class="mb-4">
                     <label class="form-label">Search Contacts</label>
+
                     <input 
                         class="form-control mb-3" 
                         type="text" 
@@ -32,6 +35,20 @@
                     </button>
 
                     <p class="text-center text-muted mt-3 mb-0" id="contactSearchResult"></p>
+                </div>
+
+                <hr>
+
+                <!-- Contact Results -->
+                <div class="mt-4 mb-4">
+                    <h5>Contacts</h5>
+                    <p class="text-muted small">
+                        Search results will appear here. Use Edit or Delete next to each contact.
+                    </p>
+
+                    <div id="contactList"></div>
+
+                    <p class="text-center text-muted mt-3 mb-0" id="contactDeleteResult"></p>
                 </div>
 
                 <hr>
@@ -50,48 +67,6 @@
                     </button>
 
                     <p class="text-center text-muted mt-3 mb-0" id="contactAddResult"></p>
-                </div>
-
-                <hr>
-
-                <!-- Edit Contact -->
-                <div class="mb-4">
-                    <label class="form-label">Edit Contact</label>
-
-                    <input class="form-control mb-3" type="text" id="editContactId" placeholder="Contact ID">
-                    <input class="form-control mb-3" type="text" id="editFirstName" placeholder="First Name">
-                    <input class="form-control mb-3" type="text" id="editLastName" placeholder="Last Name">
-                    <input class="form-control mb-3" type="text" id="editPhone" placeholder="Phone">
-                    <input class="form-control mb-3" type="email" id="editEmail" placeholder="Email">
-
-                    <button class="btn btn-warning" onclick="editContact();">
-                        Edit Contact
-                    </button>
-
-                    <p class="text-center text-muted mt-3 mb-0" id="contactEditResult"></p>
-                </div>
-
-                <hr>
-
-                <!-- Delete Contact -->
-                <div class="mb-4">
-                    <label class="form-label">Delete Contact</label>
-
-                    <input class="form-control mb-3" type="text" id="deleteContactId" placeholder="Contact ID">
-
-                    <button class="btn btn-danger" onclick="deleteContact();">
-                        Delete Contact
-                    </button>
-
-                    <p class="text-center text-muted mt-3 mb-0" id="contactDeleteResult"></p>
-                </div>
-
-                <hr>
-
-                <!-- Contact Results -->
-                <div class="mt-4">
-                    <h5>Contacts</h5>
-                    <div id="contactList"></div>
                 </div>
 
             </div>

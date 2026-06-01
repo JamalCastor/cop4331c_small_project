@@ -239,6 +239,7 @@ function searchContacts()
 	let xhr = new XMLHttpRequest();
 	xhr.open("POST", url, true);
 	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+
 	try
 	{
 		xhr.onreadystatechange = function() 
@@ -258,17 +259,64 @@ function searchContacts()
 				
 				for( let i=0; i<jsonObject.results.length; i++ )
 				{
-					contactList += jsonObject.results[i];
+					let contact = jsonObject.results[i];
 
-					if( i < jsonObject.results.length - 1 )
+					let fullName = contact.name;
+					let nameParts = fullName.split(" ");
+					let firstName = nameParts[0];
+					let lastName = "";
+
+					if(nameParts.length > 1)
 					{
-						contactList += "<br />\r\n";
+						lastName = nameParts.slice(1).join(" ");
 					}
+
+					contactList += `
+						<div class="card mb-3" id="contactCard${contact.id}">
+							<div class="card-body">
+								<div class="d-flex justify-content-between align-items-center">
+									<div>
+										<strong>${contact.name}</strong>
+										<br>
+										<small class="text-muted">Contact ID: ${contact.id}</small>
+									</div>
+
+									<div>
+										<button class="btn btn-warning btn-sm me-2" onclick="showInlineEditForm(${contact.id}, '${firstName}', '${lastName}')">
+											Edit
+										</button>
+
+										<button class="btn btn-danger btn-sm" onclick="deleteContactById(${contact.id})">
+											Delete
+										</button>
+									</div>
+								</div>
+
+								<div id="editForm${contact.id}" class="mt-3 d-none">
+									<input class="form-control mb-2" type="text" id="editFirstName${contact.id}" value="${firstName}" placeholder="First Name">
+									<input class="form-control mb-2" type="text" id="editLastName${contact.id}" value="${lastName}" placeholder="Last Name">
+									<input class="form-control mb-2" type="text" id="editPhone${contact.id}" placeholder="Phone">
+									<input class="form-control mb-2" type="email" id="editEmail${contact.id}" placeholder="Email">
+
+									<button class="btn btn-success btn-sm me-2" onclick="editContactById(${contact.id})">
+										Save Changes
+									</button>
+
+									<button class="btn btn-outline-secondary btn-sm" onclick="hideInlineEditForm(${contact.id})">
+										Cancel
+									</button>
+
+									<p class="text-muted mt-2 mb-0" id="contactEditResult${contact.id}"></p>
+								</div>
+							</div>
+						</div>
+					`;
 				}
 				
 				document.getElementById("contactList").innerHTML = contactList;
 			}
 		};
+
 		xhr.send(jsonPayload);
 	}
 	catch(err)
@@ -277,15 +325,15 @@ function searchContacts()
 	}
 }
 
-function editContact()
-{
-	let contactId = document.getElementById("editContactId").value;
-	let firstName = document.getElementById("editFirstName").value;
-	let lastName = document.getElementById("editLastName").value;
-	let phone = document.getElementById("editPhone").value;
-	let email = document.getElementById("editEmail").value;
 
-	document.getElementById("contactEditResult").innerHTML = "";
+function editContactById(contactId)
+{
+	let firstName = document.getElementById("editFirstName" + contactId).value;
+	let lastName = document.getElementById("editLastName" + contactId).value;
+	let phone = document.getElementById("editPhone" + contactId).value;
+	let email = document.getElementById("editEmail" + contactId).value;
+
+	document.getElementById("contactEditResult" + contactId).innerHTML = "";
 
 	let tmp = {
 		contactId: contactId,
@@ -314,18 +362,11 @@ function editContact()
 
 				if (jsonObject.error && jsonObject.error.length > 0)
 				{
-					document.getElementById("contactEditResult").innerHTML = jsonObject.error;
+					document.getElementById("contactEditResult" + contactId).innerHTML = jsonObject.error;
 					return;
 				}
 
-				document.getElementById("contactEditResult").innerHTML = "Contact has been updated";
-
-				document.getElementById("editContactId").value = "";
-				document.getElementById("editFirstName").value = "";
-				document.getElementById("editLastName").value = "";
-				document.getElementById("editPhone").value = "";
-				document.getElementById("editEmail").value = "";
-
+				document.getElementById("contactEditResult" + contactId).innerHTML = "Contact has been updated";
 				searchContacts();
 			}
 		};
@@ -334,16 +375,33 @@ function editContact()
 	}
 	catch(err)
 	{
-		document.getElementById("contactEditResult").innerHTML = err.message;
+		document.getElementById("contactEditResult" + contactId).innerHTML = err.message;
 	}
 }
 
 
-
-function deleteContact()
+function prepareEditContact(contactId, fullName)
 {
-	let contactId = document.getElementById("deleteContactId").value;
+	document.getElementById("editContactId").value = contactId;
 
+	let nameParts = fullName.split(" ");
+	document.getElementById("editFirstName").value = nameParts[0];
+
+	if(nameParts.length > 1)
+	{
+		document.getElementById("editLastName").value = nameParts.slice(1).join(" ");
+	}
+	else
+	{
+		document.getElementById("editLastName").value = "";
+	}
+
+	document.getElementById("contactEditResult").innerHTML = "Edit the contact fields below, then click Save Changes.";
+}
+
+
+function deleteContactById(contactId)
+{
 	document.getElementById("contactDeleteResult").innerHTML = "";
 
 	let tmp = {
@@ -375,8 +433,6 @@ function deleteContact()
 
 				document.getElementById("contactDeleteResult").innerHTML = "Contact has been deleted";
 
-				document.getElementById("deleteContactId").value = "";
-
 				searchContacts();
 			}
 		};
@@ -390,5 +446,12 @@ function deleteContact()
 }
 
 
+function showInlineEditForm(contactId, firstName, lastName)
+{
+	document.getElementById("editForm" + contactId).classList.remove("d-none");
+}
 
-//TODO search needs to give me id's so i can edit the contact with the db
+function hideInlineEditForm(contactId)
+{
+	document.getElementById("editForm" + contactId).classList.add("d-none");
+}
