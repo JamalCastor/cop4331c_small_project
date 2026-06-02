@@ -19,7 +19,7 @@
 	} 
 	else
 	{
-		$stmt = $conn->prepare("SELECT FirstName, LastName FROM Contacts WHERE FirstName LIKE ? AND UserID=?");
+		$stmt = $conn->prepare("SELECT ID, FirstName, LastName FROM Contacts WHERE FirstName LIKE ? AND UserID=?");
 
 		$contactName = "%" . $inData["search"] . "%";
 
@@ -38,7 +38,7 @@
 
 			$searchCount++;
 
-			$searchResults .= '"' . $row["FirstName"] . ' ' . $row["LastName"] . '"';
+			$searchResults .= '{"id":' . $row["ID"] . ',"name":"' . $row["FirstName"] . ' ' . $row["LastName"] . '"}';
 		}
 		
 		if($searchCount == 0)

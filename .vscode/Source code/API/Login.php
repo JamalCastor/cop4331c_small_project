@@ -1,4 +1,3 @@
-
 <?php
 	$inData = getRequestInfo();
 	
@@ -13,16 +12,16 @@
 	}
 	else
 	{
-		$stmt = $conn->prepare("SELECT ID,firstName,lastName,Password FROM Users WHERE Login=?");
+		$stmt = $conn->prepare("SELECT ID,FirstName,LastName,Password FROM Users WHERE Login=?");
 		$stmt->bind_param("s", $inData["login"]);
 		$stmt->execute();
 		$result = $stmt->get_result();
 
 		if( $row = $result->fetch_assoc() )
 		{
-			if( password_verify($inData["password"], $row["Password"]) )
+			if( md5($inData["password"]) == $row["Password"] )
 			{
-				returnWithInfo( $row['firstName'], $row['lastName'], $row['ID'] );
+				returnWithInfo( $row['FirstName'], $row['LastName'], $row['ID'] );
 			}
 			else
 			{
