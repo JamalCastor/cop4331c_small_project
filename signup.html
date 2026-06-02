@@ -14,16 +14,71 @@
         <div class="card shadow-sm p-4 w-100" style="max-width: 450px;">
             <div class="card-body">
 
-                <h1 class="h3 text-center mb-4">Create Account</h1>
+                <h1 class="h3 text-center mb-3">Create Account</h1>
 
-                <input class="form-control mb-3" type="text" id="signupFirstName" placeholder="First Name">
-                <input class="form-control mb-3" type="text" id="signupLastName" placeholder="Last Name">
-                <input class="form-control mb-3" type="text" id="signupLogin" placeholder="Username">
-                <input class="form-control mb-3" type="password" id="signupPassword" placeholder="Password">
+                <p class="text-muted small text-center mb-4">
+                    <span class="text-danger">*</span> Required fields
+                </p>
 
-                <button class="btn btn-primary w-100" type="button" onclick="doSignup();">
-                    Sign Up
-                </button>
+                <form onsubmit="event.preventDefault(); doSignup();">
+
+                    <div class="mb-3">
+                        <label class="form-label" for="signupFirstName">
+                            First Name <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            class="form-control" 
+                            type="text" 
+                            id="signupFirstName" 
+                            placeholder="First Name"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="signupLastName">
+                            Last Name <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            class="form-control" 
+                            type="text" 
+                            id="signupLastName" 
+                            placeholder="Last Name"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="signupLogin">
+                            Username <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            class="form-control" 
+                            type="text" 
+                            id="signupLogin" 
+                            placeholder="Username"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="signupPassword">
+                            Password <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            class="form-control" 
+                            type="password" 
+                            id="signupPassword" 
+                            placeholder="Password"
+                            required
+                        >
+                    </div>
+
+                    <button class="btn btn-primary w-100 mt-2" type="submit">
+                        Sign Up
+                    </button>
+
+                </form>
 
                 <p class="text-center text-muted mt-3 mb-0" id="signupResult"></p>
 

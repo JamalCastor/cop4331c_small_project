@@ -293,21 +293,80 @@ function searchContacts()
 								</div>
 
 								<div id="editForm${contact.id}" class="mt-3 d-none">
-									<input class="form-control mb-2" type="text" id="editFirstName${contact.id}" value="${firstName}" placeholder="First Name">
-									<input class="form-control mb-2" type="text" id="editLastName${contact.id}" value="${lastName}" placeholder="Last Name">
-									<input class="form-control mb-2" type="text" id="editPhone${contact.id}" placeholder="Phone">
-									<input class="form-control mb-2" type="email" id="editEmail${contact.id}" placeholder="Email">
 
-									<button class="btn btn-success btn-sm me-2" onclick="editContactById(${contact.id})">
-										Save Changes
-									</button>
+									<p class="text-muted small mb-3">
+										<span class="text-danger">*</span> Required fields
+									</p>
 
-									<button class="btn btn-outline-secondary btn-sm" onclick="hideInlineEditForm(${contact.id})">
-										Cancel
-									</button>
+									<form onsubmit="event.preventDefault(); editContactById(${contact.id});">
+
+										<div class="mb-2">
+											<label class="form-label small mb-1" for="editFirstName${contact.id}">
+												First Name <span class="text-danger">*</span>
+											</label>
+											<input 
+												class="form-control" 
+												type="text" 
+												id="editFirstName${contact.id}" 
+												value="${firstName}" 
+												placeholder="First Name"
+												required
+											>
+										</div>
+
+										<div class="mb-2">
+											<label class="form-label small mb-1" for="editLastName${contact.id}">
+												Last Name <span class="text-danger">*</span>
+											</label>
+											<input 
+												class="form-control" 
+												type="text" 
+												id="editLastName${contact.id}" 
+												value="${lastName}" 
+												placeholder="Last Name"
+												required
+											>
+										</div>
+
+										<div class="mb-2">
+											<label class="form-label small mb-1" for="editPhone${contact.id}">
+												Phone <span class="text-danger">*</span>
+											</label>
+											<input 
+												class="form-control" 
+												type="text" 
+												id="editPhone${contact.id}" 
+												placeholder="Phone"
+												required
+											>
+										</div>
+
+										<div class="mb-2">
+											<label class="form-label small mb-1" for="editEmail${contact.id}">
+												Email <span class="text-danger">*</span>
+											</label>
+											<input 
+												class="form-control" 
+												type="email" 
+												id="editEmail${contact.id}" 
+												placeholder="Email"
+												required
+											>
+										</div>
+
+										<button class="btn btn-success btn-sm me-2" type="submit">
+											Save Changes
+										</button>
+
+										<button class="btn btn-outline-secondary btn-sm" type="button" onclick="hideInlineEditForm(${contact.id})">
+											Cancel
+										</button>
+
+									</form>
 
 									<p class="text-muted mt-2 mb-0" id="contactEditResult${contact.id}"></p>
 								</div>
+
 							</div>
 						</div>
 					`;

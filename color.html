@@ -55,16 +55,71 @@
 
                 <!-- Add Contact -->
                 <div class="mb-4">
-                    <label class="form-label">Add Contact</label>
+                    <h5 class="mb-2">Add Contact</h5>
 
-                    <input class="form-control mb-3" type="text" id="contactFirstName" placeholder="First Name">
-                    <input class="form-control mb-3" type="text" id="contactLastName" placeholder="Last Name">
-                    <input class="form-control mb-3" type="text" id="contactPhone" placeholder="Phone">
-                    <input class="form-control mb-3" type="email" id="contactEmail" placeholder="Email">
+                    <p class="text-muted small mb-4">
+                        <span class="text-danger">*</span> Required fields
+                    </p>
 
-                    <button class="btn btn-success" onclick="addContact();">
-                        Add Contact
-                    </button>
+                    <form onsubmit="event.preventDefault(); addContact();">
+
+                        <div class="mb-3">
+                            <label class="form-label" for="contactFirstName">
+                                First Name <span class="text-danger">*</span>
+                            </label>
+                            <input 
+                                class="form-control" 
+                                type="text" 
+                                id="contactFirstName" 
+                                placeholder="First Name"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="contactLastName">
+                                Last Name <span class="text-danger">*</span>
+                            </label>
+                            <input 
+                                class="form-control" 
+                                type="text" 
+                                id="contactLastName" 
+                                placeholder="Last Name"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="contactPhone">
+                                Phone <span class="text-danger">*</span>
+                            </label>
+                            <input 
+                                class="form-control" 
+                                type="text" 
+                                id="contactPhone" 
+                                placeholder="Phone"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="contactEmail">
+                                Email <span class="text-danger">*</span>
+                            </label>
+                            <input 
+                                class="form-control" 
+                                type="email" 
+                                id="contactEmail" 
+                                placeholder="Email"
+                                required
+                            >
+                        </div>
+
+                        <button class="btn btn-success" type="submit">
+                            Add Contact
+                        </button>
+
+                    </form>
 
                     <p class="text-center text-muted mt-3 mb-0" id="contactAddResult"></p>
                 </div>
