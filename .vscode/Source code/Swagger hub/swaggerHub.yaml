@@ -1,0 +1,230 @@
+openapi: 3.0.0
+info:
+  title: Contact Manager API
+  version: 1.0.0
+  description: COP4331 Group 19 - Personal Contact Manager
+
+servers:
+  - url: http://juliesin.xyz/LAMPAPI
+
+paths:
+  /Login.php:
+    post:
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  example: JamalC
+                password:
+                  type: string
+                  example: Password2
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 2
+                  firstName:
+                    type: string
+                    example: Jamal
+                  lastName:
+                    type: string
+                    example: Castor
+                  error:
+                    type: string
+                    example: ""
+
+  /Signup.php:
+    post:
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Doe
+                login:
+                  type: string
+                  example: JohnD
+                password:
+                  type: string
+                  example: Password123
+      responses:
+        '200':
+          description: User created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  newId:
+                    type: integer
+                    example: 3
+                  error:
+                    type: string
+                    example: ""
+
+  /AddContacts.php:
+    post:
+      summary: Add a new contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: Charles
+                lastName:
+                  type: string
+                  example: Bravo
+                phone:
+                  type: string
+                  example: 407-555-1234
+                email:
+                  type: string
+                  example: charles.bravo@email.com
+                userId:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          description: Contact added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  newId:
+                    type: integer
+                    example: 4
+                  error:
+                    type: string
+                    example: ""
+
+  /DeleteContacts.php:
+    post:
+      summary: Delete a contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contactId:
+                  type: integer
+                  example: 1
+                userId:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          description: Contact deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: ""
+
+  /EditContacts.php:
+    post:
+      summary: Edit an existing contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contactId:
+                  type: integer
+                  example: 1
+                userId:
+                  type: integer
+                  example: 1
+                firstName:
+                  type: string
+                  example: Charles
+                lastName:
+                  type: string
+                  example: Bravo
+                phone:
+                  type: string
+                  example: 407-555-9999
+                email:
+                  type: string
+                  example: new.email@email.com
+      responses:
+        '200':
+          description: Contact updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: ""
+
+  /SearchContacts.php:
+    post:
+      summary: Search contacts by first name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: string
+                  example: Charles
+                userId:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: Charles Bravo
+                  error:
+                    type: string
+                    example: ""
