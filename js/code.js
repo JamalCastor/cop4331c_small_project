@@ -322,7 +322,6 @@ function renderContacts(contacts) {
                     <h3 class="contact-name">${fullName}</h3>
 
                     <div class="contact-details">
-                        <p><strong>Contact ID:</strong> ${id}</p>
                         <p><strong>Phone:</strong> ${phone}</p>
                         <p><strong>Email:</strong> ${email}</p>
                     </div>
