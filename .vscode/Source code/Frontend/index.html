@@ -347,6 +347,99 @@
             font-weight: 800;
             text-align: center;
         }
+        .mascot-frame {
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+        transition:
+            transform 0.18s ease,
+            box-shadow 0.18s ease;
+    }
+
+    .mascot-frame:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 22px 46px rgba(47, 86, 111, 0.18);
+    }
+
+    .koala-mascot {
+        transform-origin: 50% 85%;
+        pointer-events: none;
+    }
+
+    .koala-mascot.is-wiggling {
+        animation: koalaWiggle 0.65s ease-in-out;
+    }
+
+    .koala-bubble {
+        position: absolute;
+        top: -32px;
+        left: 50%;
+        max-width: 180px;
+        padding: 8px 12px;
+        border: 2px solid var(--primary-soft);
+        border-radius: 999px;
+        background: #ffffff;
+        color: var(--primary-dark);
+        font-size: 0.82rem;
+        font-weight: 900;
+        line-height: 1.2;
+        text-align: center;
+        box-shadow: 0 12px 24px rgba(47, 86, 111, 0.16);
+        opacity: 0;
+        transform: translate(-50%, -6px) scale(0.95);
+        pointer-events: none;
+        transition:
+            opacity 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .koala-bubble::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -8px;
+        width: 14px;
+        height: 14px;
+        background: #ffffff;
+        border-right: 2px solid var(--primary-soft);
+        border-bottom: 2px solid var(--primary-soft);
+        transform: translateX(-50%) rotate(45deg);
+    }
+
+    .koala-bubble.is-showing {
+        opacity: 1;
+        transform: translate(-50%, -14px) scale(1);
+    }
+
+    @keyframes koalaWiggle {
+        0% {
+            transform: rotate(0deg) translateY(0) scale(1);
+        }
+
+        15% {
+            transform: rotate(-8deg) translateY(-3px) scale(1.04);
+        }
+
+        30% {
+            transform: rotate(8deg) translateY(-5px) scale(1.05);
+        }
+
+        45% {
+            transform: rotate(-6deg) translateY(-3px) scale(1.04);
+        }
+
+        60% {
+            transform: rotate(5deg) translateY(-2px) scale(1.03);
+        }
+
+        75% {
+            transform: rotate(-3deg) translateY(-1px) scale(1.02);
+        }
+
+        100% {
+            transform: rotate(0deg) translateY(0) scale(1);
+        }
+    }
 
         @media (max-width: 760px) {
             .login-card {
@@ -431,6 +524,20 @@
                 color: #33485a;
             }
         }
+
+        .koala-mascot.is-wiggling {
+            animation: koalaWiggle 0.65s ease-in-out;
+        }
+
+        @keyframes koalaWiggle {
+            0% { transform: rotate(0deg) translateY(0) scale(1); }
+            15% { transform: rotate(-8deg) translateY(-3px) scale(1.04); }
+            30% { transform: rotate(8deg) translateY(-5px) scale(1.05); }
+            45% { transform: rotate(-6deg) translateY(-3px) scale(1.04); }
+            60% { transform: rotate(5deg) translateY(-2px) scale(1.03); }
+            75% { transform: rotate(-3deg) translateY(-1px) scale(1.02); }
+            100% { transform: rotate(0deg) translateY(0) scale(1); }
+        }
     </style>
 </head>
 
@@ -439,8 +546,20 @@
         <section class="login-card" aria-labelledby="pageTitle">
             <div class="brand-panel">
                 <div class="brand-content brand">
-                    <div class="mascot-frame">
+                    <div
+                        class="mascot-frame"
+                        id="koalaButton"
+                        role="button"
+                        tabindex="0"
+                        aria-label="Make the koala talk"
+                    >
+                        <div class="koala-bubble" id="koalaBubble" aria-live="polite">
+                            Click me!
+                        </div>
+
                         <img
+                            class="koala-mascot"
+                            id="koalaMascot"
                             src="images/koala.png"
                             alt="KoalaContacts koala mascot"
                             width="154"
@@ -528,5 +647,87 @@
 
     <script src="js/md5.js"></script>
     <script src="js/code.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const koalaButton = document.getElementById("koalaButton");
+            const koalaMascot = document.getElementById("koalaMascot");
+            const koalaBubble = document.getElementById("koalaBubble");
+    
+            if (!koalaButton || !koalaMascot || !koalaBubble) {
+                return;
+            }
+    
+            const koalaPhrases = [
+                "Yay!",
+                "Hello!",
+                "Chill on me!",
+                "I'm in pain!",
+                "You need help?",
+                "Relax bucko",
+                "Trust me",
+                "Crikey Mate",
+                "Carlos Rocks!!",
+                "Keep Looking!",
+                "❤️"
+            ];
+    
+            let lastPhraseIndex = -1;
+            let bubbleTimer;
+    
+            function getRandomPhrase() {
+                let randomIndex = Math.floor(Math.random() * koalaPhrases.length);
+    
+                if (koalaPhrases.length > 1) {
+                    while (randomIndex === lastPhraseIndex) {
+                        randomIndex = Math.floor(Math.random() * koalaPhrases.length);
+                    }
+                }
+    
+                lastPhraseIndex = randomIndex;
+                return koalaPhrases[randomIndex];
+            }
+    
+            function makeKoalaTalk() {
+                koalaMascot.classList.remove("is-wiggling");
+                void koalaMascot.offsetWidth;
+                koalaMascot.classList.add("is-wiggling");
+    
+                koalaBubble.textContent = getRandomPhrase();
+                koalaBubble.classList.add("is-showing");
+    
+                clearTimeout(bubbleTimer);
+    
+                bubbleTimer = setTimeout(function () {
+                    koalaBubble.classList.remove("is-showing");
+                }, 2200);
+            }
+    
+            koalaButton.addEventListener("pointerdown", makeKoalaTalk);
+    
+            koalaButton.addEventListener("keydown", function (event) {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    makeKoalaTalk();
+                }
+            });
+    
+            koalaMascot.addEventListener("animationend", function () {
+                koalaMascot.classList.remove("is-wiggling");
+            });
+        });
+    </script>
+
+    <script>
+        const koalaButton = document.getElementById("koalaButton");
+        const koalaMascot = document.getElementById("koalaMascot");
+
+        function wiggleKoala() {
+            koalaMascot.classList.remove("is-wiggling");
+            void koalaMascot.offsetWidth;
+            koalaMascot.classList.add("is-wiggling");
+        }
+
+        koalaButton.addEventListener("click", wiggleKoala);
+    </script>
 </body>
 </html>
