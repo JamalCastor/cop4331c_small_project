@@ -1,516 +1,634 @@
-const urlBase = 'http://juliesin.xyz/LAMPAPI';
-//const urlBase = 'http://cop4331-5.com/LAMPAPI';
-const extension = 'php';
+const urlBase = "http://juliesin.xyz/LAMPAPI";
+// const urlBase = "http://cop4331-5.com/LAMPAPI";
+const extension = "php";
 
 let userId = 0;
 let firstName = "";
 let lastName = "";
 
-function doLogin()
-{
-	userId = 0;
-	firstName = "";
-	lastName = "";
-	
-	let login = document.getElementById("loginName").value;
-	let password = document.getElementById("loginPassword").value;
-    
-	//var hash = md5( password );
-	
-	document.getElementById("loginResult").innerHTML = "";
-
-	let tmp = {login:login,password:password};
-	//var tmp = {login:login,password:hash};
-	let jsonPayload = JSON.stringify( tmp );
-	
-	let url = urlBase + '/Login.' + extension;
-
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", url, true);
-	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-	try
-	{
-		xhr.onreadystatechange = function() 
-		{
-			if (this.readyState == 4 && this.status == 200) 
-			{
-				let jsonObject = JSON.parse( xhr.responseText );
-				userId = jsonObject.id;
-		
-				if( userId < 1 )
-				{		
-					document.getElementById("loginResult").innerHTML = "User/Password combination incorrect";
-					return;
-				}
-		
-				firstName = jsonObject.firstName;
-				lastName = jsonObject.lastName;
-
-				saveCookie();
-	
-				window.location.href = "color.html";
-			}
-		};
-		xhr.send(jsonPayload);
-	}
-	catch(err)
-	{
-		document.getElementById("loginResult").innerHTML = err.message;
-	}
-
+function getElement(id) {
+    return document.getElementById(id);
 }
 
+function getValue(id) {
+    const element = getElement(id);
+    return element ? element.value.trim() : "";
+}
 
+function setStatus(elementId, message, type) {
+    const element = getElement(elementId);
 
-function doSignup()
-{
-    let firstName = document.getElementById("signupFirstName").value;
-    let lastName = document.getElementById("signupLastName").value;
-    let login = document.getElementById("signupLogin").value;
-    let password = document.getElementById("signupPassword").value;
+    if (!element) {
+        return;
+    }
 
-    document.getElementById("signupResult").innerHTML = "";
+    element.textContent = message;
+    element.classList.remove("success", "error");
 
-    let tmp = {
-        firstName: firstName,
-        lastName: lastName,
+    if (type === "success") {
+        element.classList.add("success");
+    }
+
+    if (type === "error") {
+        element.classList.add("error");
+    }
+}
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function makeSafeDomId(value) {
+    return String(value ?? "").replace(/[^a-zA-Z0-9_-]/g, "");
+}
+
+function sendJsonRequest(endpoint, payload, statusElementId, successCallback) {
+    const jsonPayload = JSON.stringify(payload);
+    const url = urlBase + "/" + endpoint + "." + extension;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+
+    xhr.onreadystatechange = function () {
+        if (this.readyState !== 4) {
+            return;
+        }
+
+        if (this.status < 200 || this.status >= 300) {
+            setStatus(statusElementId, "Something went wrong. Please try again.", "error");
+            return;
+        }
+
+        try {
+            const jsonObject = JSON.parse(xhr.responseText);
+            successCallback(jsonObject);
+        } catch (err) {
+            setStatus(statusElementId, "Invalid server response. Please try again.", "error");
+        }
+    };
+
+    xhr.onerror = function () {
+        setStatus(statusElementId, "Network error. Please try again.", "error");
+    };
+
+    try {
+        xhr.send(jsonPayload);
+    } catch (err) {
+        setStatus(statusElementId, err.message, "error");
+    }
+}
+
+function doLogin() {
+    userId = 0;
+    firstName = "";
+    lastName = "";
+
+    const login = getValue("loginName");
+    const password = getValue("loginPassword");
+
+    setStatus("loginResult", "", "");
+
+    const payload = {
         login: login,
         password: password
     };
 
-    let jsonPayload = JSON.stringify(tmp);
+    sendJsonRequest("Login", payload, "loginResult", function (jsonObject) {
+        userId = Number(jsonObject.id);
 
-    let url = urlBase + '/Signup.' + extension;
+        if (userId < 1) {
+            setStatus("loginResult", "Username or password is incorrect.", "error");
+            return;
+        }
 
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+        firstName = jsonObject.firstName || "";
+        lastName = jsonObject.lastName || "";
 
-    try
-    {
-        xhr.onreadystatechange = function()
-        {
-            if (this.readyState == 4 && this.status == 200)
-            {
-                let jsonObject = JSON.parse(xhr.responseText);
+        saveCookie();
 
-                if (jsonObject.error && jsonObject.error.length > 0)
-                {
-                    document.getElementById("signupResult").innerHTML = jsonObject.error;
-                    return;
-                }
+        window.location.href = "color.html";
+    });
+}
 
-                document.getElementById("signupResult").innerHTML = "Account created successfully!";
+function doSignup() {
+    const signupFirstName = getValue("signupFirstName");
+    const signupLastName = getValue("signupLastName");
+    const login = getValue("signupLogin");
+    const password = getValue("signupPassword");
 
-                setTimeout(function()
-                {
-                    window.location.href = "index.html";
-                }, 1000);
-            }
-        };
+    setStatus("signupResult", "", "");
 
-        xhr.send(jsonPayload);
+    const payload = {
+        firstName: signupFirstName,
+        lastName: signupLastName,
+        login: login,
+        password: password
+    };
+
+    sendJsonRequest("Signup", payload, "signupResult", function (jsonObject) {
+        if (jsonObject.error && jsonObject.error.length > 0) {
+            setStatus("signupResult", jsonObject.error, "error");
+            return;
+        }
+
+        setStatus("signupResult", "Account created successfully! Redirecting to login.", "success");
+
+        setTimeout(function () {
+            window.location.href = "index.html";
+        }, 1000);
+    });
+}
+
+function saveCookie() {
+    const minutes = 20;
+    const date = new Date();
+    date.setTime(date.getTime() + minutes * 60 * 1000);
+
+    const expires = date.toUTCString();
+
+    document.cookie = "firstName=" + encodeURIComponent(firstName) + "; expires=" + expires + "; path=/";
+    document.cookie = "lastName=" + encodeURIComponent(lastName) + "; expires=" + expires + "; path=/";
+    document.cookie = "userId=" + encodeURIComponent(userId) + "; expires=" + expires + "; path=/";
+}
+
+function getCookieValue(name) {
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        const parts = cookie.split("=");
+
+        if (parts[0] === name) {
+            return decodeURIComponent(parts.slice(1).join("="));
+        }
     }
-    catch(err)
-    {
-        document.getElementById("signupResult").innerHTML = err.message;
+
+    return "";
+}
+
+function readLegacyCookie() {
+    const data = document.cookie;
+    const splits = data.split(",");
+
+    for (let i = 0; i < splits.length; i++) {
+        const thisOne = splits[i].trim();
+        const tokens = thisOne.split("=");
+
+        if (tokens[0] === "firstName") {
+            firstName = tokens[1] || "";
+        } else if (tokens[0] === "lastName") {
+            lastName = tokens[1] || "";
+        } else if (tokens[0] === "userId") {
+            userId = parseInt(tokens[1], 10);
+        }
     }
 }
 
-function saveCookie()
-{
-	let minutes = 20;
-	let date = new Date();
-	date.setTime(date.getTime()+(minutes*60*1000));	
-	document.cookie = "firstName=" + firstName + ",lastName=" + lastName + ",userId=" + userId + ";expires=" + date.toGMTString();
+function readCookie() {
+    userId = parseInt(getCookieValue("userId"), 10);
+    firstName = getCookieValue("firstName");
+    lastName = getCookieValue("lastName");
+
+    if (!userId || userId < 1) {
+        readLegacyCookie();
+    }
+
+    if (!userId || userId < 1) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    const userNameElement = getElement("userName");
+
+    if (userNameElement) {
+        userNameElement.textContent = "Logged in as " + firstName + " " + lastName;
+    }
 }
 
-function readCookie()
-{
-	userId = -1;
-	let data = document.cookie;
-	let splits = data.split(",");
-	for(var i = 0; i < splits.length; i++) 
-	{
-		let thisOne = splits[i].trim();
-		let tokens = thisOne.split("=");
-		if( tokens[0] == "firstName" )
-		{
-			firstName = tokens[1];
-		}
-		else if( tokens[0] == "lastName" )
-		{
-			lastName = tokens[1];
-		}
-		else if( tokens[0] == "userId" )
-		{
-			userId = parseInt( tokens[1].trim() );
-		}
-	}
-	
-	if( userId < 0 )
-	{
-		window.location.href = "index.html";
-	}
-	else
-	{
-		document.getElementById("userName").innerHTML = "Logged in as " + firstName + " " + lastName;
-	}
+function doLogout() {
+    userId = 0;
+    firstName = "";
+    lastName = "";
+
+    document.cookie = "firstName=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+    document.cookie = "lastName=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+    document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+
+    window.location.href = "index.html";
 }
 
-function doLogout()
-{
-	userId = 0;
-	firstName = "";
-	lastName = "";
-	document.cookie = "firstName= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
-	window.location.href = "index.html";
-}
+function addContact() {
+    const contactFirstName = getValue("contactFirstName");
+    const contactLastName = getValue("contactLastName");
+    const phone = getValue("contactPhone");
+    const email = getValue("contactEmail");
 
+    setStatus("contactAddResult", "", "");
 
-function addContact()
-{
-    let firstName = document.getElementById("contactFirstName").value;
-    let lastName = document.getElementById("contactLastName").value;
-    let phone = document.getElementById("contactPhone").value;
-    let email = document.getElementById("contactEmail").value;
-
-    document.getElementById("contactAddResult").innerHTML = "";
-
-    let tmp = {
-        firstName: firstName,
-        lastName: lastName,
+    const payload = {
+        firstName: contactFirstName,
+        lastName: contactLastName,
         phone: phone,
         email: email,
         userId: userId
     };
 
-    let jsonPayload = JSON.stringify(tmp);
+    sendJsonRequest("AddContacts", payload, "contactAddResult", function (jsonObject) {
+        if (jsonObject.error && jsonObject.error.length > 0) {
+            setStatus("contactAddResult", jsonObject.error, "error");
+            return;
+        }
 
-    let url = urlBase + '/AddContacts.' + extension;
+        setStatus("contactAddResult", "Contact has been added.", "success");
 
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+        getElement("contactFirstName").value = "";
+        getElement("contactLastName").value = "";
+        getElement("contactPhone").value = "";
+        getElement("contactEmail").value = "";
+    });
+}
 
-    try
-    {
-        xhr.onreadystatechange = function()
-        {
-            if (this.readyState == 4 && this.status == 200)
-            {
-                let jsonObject = JSON.parse(xhr.responseText);
+function normalizeContact(contact) {
+    const id = contact.id || contact.ID || contact.contactId || contact.ContactID || "";
 
-                if (jsonObject.error && jsonObject.error.length > 0)
-                {
-                    document.getElementById("contactAddResult").innerHTML = jsonObject.error;
-                    return;
-                }
+    let contactFirstName = contact.firstName || contact.FirstName || "";
+    let contactLastName = contact.lastName || contact.LastName || "";
 
-                document.getElementById("contactAddResult").innerHTML = "Contact has been added";
-
-                document.getElementById("contactFirstName").value = "";
-                document.getElementById("contactLastName").value = "";
-                document.getElementById("contactPhone").value = "";
-                document.getElementById("contactEmail").value = "";
-            }
-        };
-
-        xhr.send(jsonPayload);
+    if ((!contactFirstName && !contactLastName) && contact.name) {
+        const nameParts = String(contact.name).split(" ");
+        contactFirstName = nameParts[0] || "";
+        contactLastName = nameParts.slice(1).join(" ");
     }
-    catch(err)
-    {
-        document.getElementById("contactAddResult").innerHTML = err.message;
+
+    const fullName = `${contactFirstName} ${contactLastName}`.trim() || contact.name || "Unnamed Contact";
+
+    return {
+        id: id,
+        safeDomId: makeSafeDomId(id),
+        firstName: contactFirstName,
+        lastName: contactLastName,
+        fullName: fullName,
+        phone: contact.phone || contact.Phone || "",
+        email: contact.email || contact.Email || ""
+    };
+}
+
+function renderEmptyContacts(message) {
+    const contactList = getElement("contactList");
+
+    if (!contactList) {
+        return;
+    }
+
+    contactList.innerHTML = `
+        <div class="empty-state">
+            ${escapeHTML(message)}
+        </div>
+    `;
+}
+
+function renderContacts(contacts) {
+    const contactList = getElement("contactList");
+
+    if (!contactList) {
+        return;
+    }
+
+    if (!Array.isArray(contacts) || contacts.length === 0) {
+        renderEmptyContacts("No contacts found. Try searching for another first name.");
+        return;
+    }
+
+    contactList.innerHTML = contacts.map(function (rawContact) {
+        const contact = normalizeContact(rawContact);
+
+        const id = escapeHTML(contact.id);
+        const safeDomId = escapeHTML(contact.safeDomId);
+        const firstName = escapeHTML(contact.firstName);
+        const lastName = escapeHTML(contact.lastName);
+        const fullName = escapeHTML(contact.fullName);
+        const phone = escapeHTML(contact.phone || "Not provided");
+        const email = escapeHTML(contact.email || "Not provided");
+
+        return `
+            <article class="contact-card" id="contactCard${safeDomId}">
+                <div>
+                    <h3 class="contact-name">${fullName}</h3>
+
+                    <div class="contact-details">
+                        <p><strong>Phone:</strong> ${phone}</p>
+                        <p><strong>Email:</strong> ${email}</p>
+                    </div>
+                </div>
+
+                <div class="contact-actions">
+                    <button
+                        class="button button-secondary button-small"
+                        type="button"
+                        data-action="edit"
+                        data-contact-id="${id}"
+                        data-dom-id="${safeDomId}"
+                        aria-expanded="false"
+                        aria-controls="editForm${safeDomId}"
+                        aria-label="Edit ${fullName}"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        class="button button-danger button-small"
+                        type="button"
+                        data-action="delete"
+                        data-contact-id="${id}"
+                        data-dom-id="${safeDomId}"
+                        aria-label="Delete ${fullName}"
+                    >
+                        Delete
+                    </button>
+                </div>
+
+                <div class="edit-form" id="editForm${safeDomId}" hidden>
+                    <p class="required-note">
+                        <span aria-hidden="true">*</span> Required fields
+                    </p>
+
+                    <form class="edit-contact-form" data-contact-id="${id}" data-dom-id="${safeDomId}">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="editFirstName${safeDomId}">
+                                    First Name <span class="required" aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    class="form-input"
+                                    type="text"
+                                    id="editFirstName${safeDomId}"
+                                    value="${firstName}"
+                                    placeholder="Enter first name"
+                                    autocomplete="given-name"
+                                    required
+                                    aria-required="true"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="editLastName${safeDomId}">
+                                    Last Name <span class="required" aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    class="form-input"
+                                    type="text"
+                                    id="editLastName${safeDomId}"
+                                    value="${lastName}"
+                                    placeholder="Enter last name"
+                                    autocomplete="family-name"
+                                    required
+                                    aria-required="true"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="editPhone${safeDomId}">
+                                    Phone <span class="required" aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    class="form-input"
+                                    type="tel"
+                                    id="editPhone${safeDomId}"
+                                    value="${escapeHTML(contact.phone)}"
+                                    placeholder="Enter phone number"
+                                    autocomplete="tel"
+                                    required
+                                    aria-required="true"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="editEmail${safeDomId}">
+                                    Email <span class="required" aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    class="form-input"
+                                    type="email"
+                                    id="editEmail${safeDomId}"
+                                    value="${escapeHTML(contact.email)}"
+                                    placeholder="Enter email address"
+                                    autocomplete="email"
+                                    required
+                                    aria-required="true"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="button-row">
+                            <button class="button button-primary button-small" type="submit">
+                                Save Changes
+                            </button>
+
+                            <button
+                                class="button button-secondary button-small"
+                                type="button"
+                                data-action="cancel"
+                                data-contact-id="${id}"
+                                data-dom-id="${safeDomId}"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+
+                    <p
+                        class="status-message"
+                        id="contactEditResult${safeDomId}"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
+                </div>
+            </article>
+        `;
+    }).join("");
+
+    initializeContactListEvents();
+}
+
+function searchContacts() {
+    const searchText = getValue("searchText");
+
+    setStatus("contactSearchResult", "Searching contacts...", "");
+    setStatus("contactDeleteResult", "", "");
+
+    const payload = {
+        search: searchText,
+        userId: userId
+    };
+
+    sendJsonRequest("SearchContacts", payload, "contactSearchResult", function (jsonObject) {
+        if (jsonObject.error && jsonObject.error.length > 0) {
+            setStatus("contactSearchResult", jsonObject.error, "error");
+            renderEmptyContacts("No contacts are showing right now.");
+            return;
+        }
+
+        const contacts = Array.isArray(jsonObject.results) ? jsonObject.results : [];
+
+        if (contacts.length === 0) {
+            setStatus("contactSearchResult", "No contacts found.", "");
+            renderEmptyContacts("No contacts found. Try searching for another first name.");
+            return;
+        }
+
+        setStatus("contactSearchResult", "Contacts have been retrieved.", "success");
+        renderContacts(contacts);
+    });
+}
+
+function editContactById(contactId, domId) {
+    const contactFirstName = getValue("editFirstName" + domId);
+    const contactLastName = getValue("editLastName" + domId);
+    const phone = getValue("editPhone" + domId);
+    const email = getValue("editEmail" + domId);
+
+    const editResultId = "contactEditResult" + domId;
+
+    setStatus(editResultId, "", "");
+
+    const payload = {
+        contactId: contactId,
+        userId: userId,
+        firstName: contactFirstName,
+        lastName: contactLastName,
+        phone: phone,
+        email: email
+    };
+
+    sendJsonRequest("EditContacts", payload, editResultId, function (jsonObject) {
+        if (jsonObject.error && jsonObject.error.length > 0) {
+            setStatus(editResultId, jsonObject.error, "error");
+            return;
+        }
+
+        setStatus(editResultId, "Contact has been updated.", "success");
+
+        setTimeout(function () {
+            searchContacts();
+        }, 700);
+    });
+}
+
+function deleteContactById(contactId) {
+    setStatus("contactDeleteResult", "", "");
+
+    const payload = {
+        contactId: contactId,
+        userId: userId
+    };
+
+    sendJsonRequest("DeleteContacts", payload, "contactDeleteResult", function (jsonObject) {
+        if (jsonObject.error && jsonObject.error.length > 0) {
+            setStatus("contactDeleteResult", jsonObject.error, "error");
+            return;
+        }
+
+        setStatus("contactDeleteResult", "Contact has been deleted.", "success");
+        searchContacts();
+    });
+}
+
+function showInlineEditForm(contactId, domId, button) {
+    const editForm = getElement("editForm" + domId);
+
+    if (!editForm) {
+        return;
+    }
+
+    editForm.hidden = false;
+
+    if (button) {
+        button.setAttribute("aria-expanded", "true");
+    }
+
+    const firstInput = getElement("editFirstName" + domId);
+
+    if (firstInput) {
+        firstInput.focus();
     }
 }
 
-function searchContacts()
-{
-	let srch = document.getElementById("searchText").value;
-	document.getElementById("contactSearchResult").innerHTML = "";
-	
-	let contactList = "";
+function hideInlineEditForm(contactId, domId) {
+    const editForm = getElement("editForm" + domId);
 
-	let tmp = {search:srch,userId:userId};
-	let jsonPayload = JSON.stringify( tmp );
+    if (!editForm) {
+        return;
+    }
 
-	let url = urlBase + '/SearchContacts.' + extension;
-	
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", url, true);
-	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    editForm.hidden = true;
 
-	try
-	{
-		xhr.onreadystatechange = function() 
-		{
-			if (this.readyState == 4 && this.status == 200) 
-			{
-				let jsonObject = JSON.parse( xhr.responseText );
+    const editButton = document.querySelector(
+        '[data-action="edit"][data-contact-id="' + contactId + '"]'
+    );
 
-				if( jsonObject.error && jsonObject.error.length > 0 )
-				{
-					document.getElementById("contactSearchResult").innerHTML = jsonObject.error;
-					document.getElementById("contactList").innerHTML = "";
-					return;
-				}
+    if (editButton) {
+        editButton.setAttribute("aria-expanded", "false");
+        editButton.focus();
+    }
 
-				document.getElementById("contactSearchResult").innerHTML = "Contact(s) has been retrieved";
-				
-				for( let i=0; i<jsonObject.results.length; i++ )
-				{
-					let contact = jsonObject.results[i];
-
-					let fullName = contact.name;
-					let nameParts = fullName.split(" ");
-					let firstName = nameParts[0];
-					let lastName = "";
-
-					if(nameParts.length > 1)
-					{
-						lastName = nameParts.slice(1).join(" ");
-					}
-
-					contactList += `
-						<div class="card mb-3" id="contactCard${contact.id}">
-							<div class="card-body">
-								<div class="d-flex justify-content-between align-items-center">
-									<div>
-										<strong>${contact.name}</strong>
-										<br>
-										<small class="text-muted">Contact ID: ${contact.id}</small>
-									</div>
-
-									<div>
-										<button class="btn btn-warning btn-sm me-2" onclick="showInlineEditForm(${contact.id}, '${firstName}', '${lastName}')">
-											Edit
-										</button>
-
-										<button class="btn btn-danger btn-sm" onclick="deleteContactById(${contact.id})">
-											Delete
-										</button>
-									</div>
-								</div>
-
-								<div id="editForm${contact.id}" class="mt-3 d-none">
-
-									<p class="text-muted small mb-3">
-										<span class="text-danger">*</span> Required fields
-									</p>
-
-									<form onsubmit="event.preventDefault(); editContactById(${contact.id});">
-
-										<div class="mb-2">
-											<label class="form-label small mb-1" for="editFirstName${contact.id}">
-												First Name <span class="text-danger">*</span>
-											</label>
-											<input 
-												class="form-control" 
-												type="text" 
-												id="editFirstName${contact.id}" 
-												value="${firstName}" 
-												placeholder="First Name"
-												required
-											>
-										</div>
-
-										<div class="mb-2">
-											<label class="form-label small mb-1" for="editLastName${contact.id}">
-												Last Name <span class="text-danger">*</span>
-											</label>
-											<input 
-												class="form-control" 
-												type="text" 
-												id="editLastName${contact.id}" 
-												value="${lastName}" 
-												placeholder="Last Name"
-												required
-											>
-										</div>
-
-										<div class="mb-2">
-											<label class="form-label small mb-1" for="editPhone${contact.id}">
-												Phone <span class="text-danger">*</span>
-											</label>
-											<input 
-												class="form-control" 
-												type="text" 
-												id="editPhone${contact.id}" 
-												placeholder="Phone"
-												required
-											>
-										</div>
-
-										<div class="mb-2">
-											<label class="form-label small mb-1" for="editEmail${contact.id}">
-												Email <span class="text-danger">*</span>
-											</label>
-											<input 
-												class="form-control" 
-												type="email" 
-												id="editEmail${contact.id}" 
-												placeholder="Email"
-												required
-											>
-										</div>
-
-										<button class="btn btn-success btn-sm me-2" type="submit">
-											Save Changes
-										</button>
-
-										<button class="btn btn-outline-secondary btn-sm" type="button" onclick="hideInlineEditForm(${contact.id})">
-											Cancel
-										</button>
-
-									</form>
-
-									<p class="text-muted mt-2 mb-0" id="contactEditResult${contact.id}"></p>
-								</div>
-
-							</div>
-						</div>
-					`;
-				}
-				
-				document.getElementById("contactList").innerHTML = contactList;
-			}
-		};
-
-		xhr.send(jsonPayload);
-	}
-	catch(err)
-	{
-		document.getElementById("contactSearchResult").innerHTML = err.message;
-	}
+    setStatus("contactEditResult" + domId, "", "");
 }
 
+function initializeContactListEvents() {
+    const contactList = getElement("contactList");
 
-function editContactById(contactId)
-{
-	let firstName = document.getElementById("editFirstName" + contactId).value;
-	let lastName = document.getElementById("editLastName" + contactId).value;
-	let phone = document.getElementById("editPhone" + contactId).value;
-	let email = document.getElementById("editEmail" + contactId).value;
+    if (!contactList || contactList.dataset.eventsAttached === "true") {
+        return;
+    }
 
-	document.getElementById("contactEditResult" + contactId).innerHTML = "";
+    contactList.dataset.eventsAttached = "true";
 
-	let tmp = {
-		contactId: contactId,
-		userId: userId,
-		firstName: firstName,
-		lastName: lastName,
-		phone: phone,
-		email: email
-	};
+    contactList.addEventListener("click", function (event) {
+        const button = event.target.closest("button[data-action]");
 
-	let jsonPayload = JSON.stringify(tmp);
+        if (!button) {
+            return;
+        }
 
-	let url = urlBase + '/EditContacts.' + extension;
+        const action = button.dataset.action;
+        const contactId = button.dataset.contactId;
+        const domId = button.dataset.domId;
 
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", url, true);
-	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+        if (action === "edit") {
+            showInlineEditForm(contactId, domId, button);
+        }
 
-	try
-	{
-		xhr.onreadystatechange = function()
-		{
-			if (this.readyState == 4 && this.status == 200)
-			{
-				let jsonObject = JSON.parse(xhr.responseText);
+        if (action === "cancel") {
+            hideInlineEditForm(contactId, domId);
+        }
 
-				if (jsonObject.error && jsonObject.error.length > 0)
-				{
-					document.getElementById("contactEditResult" + contactId).innerHTML = jsonObject.error;
-					return;
-				}
+        if (action === "delete") {
+            deleteContactById(contactId);
+        }
+    });
 
-				document.getElementById("contactEditResult" + contactId).innerHTML = "Contact has been updated";
-				searchContacts();
-			}
-		};
+    contactList.addEventListener("submit", function (event) {
+        const form = event.target.closest(".edit-contact-form");
 
-		xhr.send(jsonPayload);
-	}
-	catch(err)
-	{
-		document.getElementById("contactEditResult" + contactId).innerHTML = err.message;
-	}
+        if (!form) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const contactId = form.dataset.contactId;
+        const domId = form.dataset.domId;
+
+        editContactById(contactId, domId);
+    });
 }
 
-
-function prepareEditContact(contactId, fullName)
-{
-	document.getElementById("editContactId").value = contactId;
-
-	let nameParts = fullName.split(" ");
-	document.getElementById("editFirstName").value = nameParts[0];
-
-	if(nameParts.length > 1)
-	{
-		document.getElementById("editLastName").value = nameParts.slice(1).join(" ");
-	}
-	else
-	{
-		document.getElementById("editLastName").value = "";
-	}
-
-	document.getElementById("contactEditResult").innerHTML = "Edit the contact fields below, then click Save Changes.";
-}
-
-
-function deleteContactById(contactId)
-{
-	document.getElementById("contactDeleteResult").innerHTML = "";
-
-	let tmp = {
-		contactId: contactId,
-		userId: userId
-	};
-
-	let jsonPayload = JSON.stringify(tmp);
-
-	let url = urlBase + '/DeleteContacts.' + extension;
-
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", url, true);
-	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-
-	try
-	{
-		xhr.onreadystatechange = function()
-		{
-			if (this.readyState == 4 && this.status == 200)
-			{
-				let jsonObject = JSON.parse(xhr.responseText);
-
-				if (jsonObject.error && jsonObject.error.length > 0)
-				{
-					document.getElementById("contactDeleteResult").innerHTML = jsonObject.error;
-					return;
-				}
-
-				document.getElementById("contactDeleteResult").innerHTML = "Contact has been deleted";
-
-				searchContacts();
-			}
-		};
-
-		xhr.send(jsonPayload);
-	}
-	catch(err)
-	{
-		document.getElementById("contactDeleteResult").innerHTML = err.message;
-	}
-}
-
-
-function showInlineEditForm(contactId, firstName, lastName)
-{
-	document.getElementById("editForm" + contactId).classList.remove("d-none");
-}
-
-function hideInlineEditForm(contactId)
-{
-	document.getElementById("editForm" + contactId).classList.add("d-none");
-}
+document.addEventListener("DOMContentLoaded", function () {
+    initializeContactListEvents();
+});

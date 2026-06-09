@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KoalaContacts | Contacts</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --font-main: "Nunito", Arial, Helvetica, sans-serif;
+
+            --page-bg-start: #edf3f7;
+            --page-bg-end: #f9fbfd;
+
+            --bg-card: #ffffff;
+            --primary: #2f566f;
+            --primary-dark: #203a4e;
+            --primary-soft: #e8f0f4;
+
+            --accent: #cf6b82;
+            --accent-soft: #fde8ee;
+
+            --text-dark: #172535;
+            --text-muted: #516475;
+            --text-light: #6f7f8d;
+
+            --border: #c9d6df;
+            --border-light: #dce5eb;
+
+            --input-bg: #fbfdff;
+
+            --error: #b42318;
+            --success: #146c43;
+            --focus: #0b5fff;
+
+            --danger: #b42318;
+            --danger-dark: #8f1d14;
+
+            --shadow: 0 28px 70px rgba(23, 37, 53, 0.16);
+
+            --radius-xl: 30px;
+            --radius-lg: 22px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: var(--font-main);
+            font-weight: 600;
+            color: var(--text-dark);
+            background:
+                radial-gradient(circle at 12% 12%, rgba(47, 86, 111, 0.30), transparent 34%),
+                radial-gradient(circle at 88% 82%, rgba(207, 107, 130, 0.32), transparent 34%),
+                linear-gradient(135deg, var(--page-bg-start), var(--page-bg-end));
+        }
+
+        a,
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
+            outline: 3px solid var(--focus);
+            outline-offset: 3px;
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 32px 16px;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 920px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff;
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-area img {
+            width: 72px;
+            height: auto;
+            flex-shrink: 0;
+        }
+
+        .brand-title {
+            font-size: 1.6rem;
+            line-height: 1.2;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+        }
+
+        .user-name {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+
+        .content {
+            padding: 28px;
+        }
+
+        .section {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .section:first-child {
+            padding-top: 0;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .section-header {
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-size: 1.35rem;
+            line-height: 1.25;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .section-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .required-note {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        .required,
+        .required-note span {
+            color: var(--error);
+            font-weight: 700;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--input-bg);
+            color: var(--text-dark);
+            padding: 14px 15px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-input:hover {
+            border-color: var(--primary);
+        }
+
+        .form-input:focus {
+            border-color: var(--focus);
+            box-shadow: 0 0 0 4px rgba(11, 95, 255, 0.14);
+            outline: none;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .button {
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 12px 18px;
+            font-weight: 700;
+            font-size: 0.98rem;
+            transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+        }
+
+        .button-primary {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 10px 20px rgba(47, 82, 111, 0.22);
+        }
+
+        .button-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .button-secondary {
+            background: #ffffff;
+            color: var(--primary-dark);
+            border: 1px solid var(--border);
+        }
+
+        .button-secondary:hover {
+            background: #f4f7fb;
+        }
+
+        .button-danger {
+            background: var(--danger);
+            color: #ffffff;
+        }
+
+        .button-danger:hover {
+            background: var(--danger-dark);
+        }
+
+        .button-small {
+            padding: 9px 12px;
+            font-size: 0.9rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .status-message {
+            min-height: 22px;
+            margin-top: 14px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .status-message.error {
+            color: var(--error);
+        }
+
+        .status-message.success {
+            color: var(--success);
+        }
+
+        .contact-list {
+            display: grid;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .empty-state {
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            color: var(--text-muted);
+            background: #f9fbfd;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .contact-card {
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: #ffffff;
+            padding: 18px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .contact-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .contact-details {
+            display: grid;
+            gap: 5px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.45;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .edit-form {
+            grid-column: 1 / -1;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .edit-form .required-note {
+            margin-bottom: 16px;
+        }
+
+        .edit-form .button-row {
+            margin-top: 4px;
+        }
+
+        @media (max-width: 720px) {
+            .app-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .content {
+                padding: 22px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-card {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-actions {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page {
+                padding: 18px 12px;
+            }
+
+            .app-header {
+                padding: 20px;
+            }
+
+            .brand-area img {
+                width: 58px;
+            }
+
+            .brand-title {
+                font-size: 1.35rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body onload="readCookie();">
+    <main class="page">
+        <div class="app-shell">
+            <header class="app-header">
+                <div class="brand-area">
+                    <img
+                        src="images/koala.png"
+                        alt="KoalaContacts koala mascot"
+                        width="72"
+                        height="41"
+                    />
+
+                    <div>
+                        <h1 class="brand-title">KoalaContacts</h1>
+                        <p class="user-name" id="userName"></p>
+                    </div>
+                </div>
+
+                <button class="button button-secondary button-small" type="button" onclick="doLogout();">
+                    Log Out
+                </button>
+            </header>
+
+            <div class="content">
+                <section class="section" aria-labelledby="searchTitle">
+                    <div class="section-header">
+                        <h2 class="section-title" id="searchTitle">Search Contacts</h2>
+                        <p class="section-description">
+                            Find contacts by first name, then edit or delete them from the results.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="searchText">Search by first name</label>
+                        <input
+                            class="form-input"
+                            type="search"
+                            id="searchText"
+                            name="searchText"
+                            placeholder="Example: Alex"
+                            autocomplete="off"
+                        />
+                    </div>
+
+                    <div class="button-row">
+                        <button class="button button-primary" type="button" onclick="searchContacts();">
+                            Search Contacts
+                        </button>
+                    </div>
+
+                    <p
+                        class="status-message"
+                        id="contactSearchResult"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
+                </section>
+
+                <section class="section" aria-labelledby="contactsTitle">
+                    <div class="section-header">
+                        <h2 class="section-title" id="contactsTitle">Contacts</h2>
+                        <p class="section-description">
+                            Search results will appear here.
+                        </p>
+                    </div>
+
+                    <div
+                        class="contact-list"
+                        id="contactList"
+                        aria-live="polite"
+                    >
+                        <div class="empty-state">
+                            No contacts are showing yet. Search for a contact to get started.
+                        </div>
+                    </div>
+
+                    <p
+                        class="status-message"
+                        id="contactDeleteResult"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
+                </section>
+
+                <section class="section" aria-labelledby="addContactTitle">
+                    <div class="section-header">
+                        <h2 class="section-title" id="addContactTitle">Add Contact</h2>
+                        <p class="section-description">
+                            Create a new contact for your KoalaContacts workspace.
+                        </p>
+                        <p class="required-note" id="requiredNote">
+                            <span aria-hidden="true">*</span> Required fields
+                        </p>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); addContact();" aria-describedby="requiredNote contactAddResult">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="contactFirstName">
+                                    First Name <span class="required" aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    class="form-input"
+                                    type="text"
+                                    id="contactFirstName"
+                                    name="firstName"
+                                    placeholder="Enter first name"
+                                    autocomplete="given-name"
+                                    required
+                                    aria-required="true"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="contactLastName">
+                                    Last Name <span class="required" aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    class="form-input"
+                                    type="text"
+                                    id="contactLastName"
+                                    name="lastName"
+                                    placeholder="Enter last name"
+                                    autocomplete="family-name"
+                                    required
+                                    aria-required="true"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="contactPhone">
+                                    Phone <span class="required" aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    class="form-input"
+                                    type="tel"
+                                    id="contactPhone"
+                                    name="phone"
+                                    placeholder="Enter phone number"
+                                    autocomplete="tel"
+                                    required
+                                    aria-required="true"
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="contactEmail">
+                                    Email <span class="required" aria-hidden="true">*</span>
+                                </label>
+                                <input
+                                    class="form-input"
+                                    type="email"
+                                    id="contactEmail"
+                                    name="email"
+                                    placeholder="Enter email address"
+                                    autocomplete="email"
+                                    required
+                                    aria-required="true"
+                                />
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" type="submit">
+                            Add Contact
+                        </button>
+                    </form>
+
+                    <p
+                        class="status-message"
+                        id="contactAddResult"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/code.js"></script>
+</body>
+</html>
